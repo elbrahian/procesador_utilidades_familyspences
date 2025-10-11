@@ -1,39 +1,88 @@
 package com.familyspences.procesador_utilidades_api.config;
 
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
 
-    //exchange
-    public static final String TASKS_EXCHANGE = "tasks.exchange";
-    //queue
-    public static final String TASKS_QUEUE = "tasks.read.queue";
-    //routing key
-    public static final String TASK_CREATED_ROUTING_KEY = "task.created";
-    public static final String TASK_UPDATED_ROUTING_KEY = "task.updated";
-    public static final String TASK_DELETED_ROUTING_KEY = "task.deleted";
+    @Value("${advertisement.exchange}")
+    private String createExchange;
+
+    @Value("${mensaje.publicidad.actualizar.exchange-name}")
+    private String updateExchange;
+
+    @Value("${mensaje.publicidad.eliminar.exchange-name}")
+    private String deleteExchange;
+
+    @Value("${advertisement.queue.create}")
+    private String createQueue;
+
+    @Value("${advertisement.queue.update}")
+    private String updateQueue;
+
+    @Value("${advertisement.queue.delete}")
+    private String deleteQueue;
+
+    @Value("${advertisement.routing-key.create}")
+    private String createRoutingKey;
+
+    @Value("${advertisement.routing-key.update}")
+    private String updateRoutingKey;
+
+    @Value("${advertisement.routing-key.delete}")
+    private String deleteRoutingKey;
 
     @Bean
-    public TopicExchange tasksExchange() {
-        return new TopicExchange(TASKS_EXCHANGE);
+    public DirectExchange createAdvertisementExchange() {
+        return new DirectExchange(createExchange);
     }
 
     @Bean
-    public Queue tasksQueue() {
-        return new Queue(TASKS_QUEUE, true);
+    public DirectExchange updateAdvertisementExchange() {
+        return new DirectExchange(updateExchange);
     }
 
     @Bean
-    public Binding bindingCreated(Queue tasksQueue, TopicExchange tasksExchange) {
-        return BindingBuilder.bind(tasksQueue).to(tasksExchange).with("task.*");
+    public DirectExchange deleteAdvertisementExchange() {
+        return new DirectExchange(deleteExchange);
     }
 
     @Bean
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
+    public Queue createAdvertisementQueue() {
+        return new Queue(createQueue);
+    }
+
+    @Bean
+    public Queue updateAdvertisementQueue() {
+        return new Queue(updateQueue);
+    }
+
+    @Bean
+    public Queue deleteAdvertisementQueue() {
+        return new Queue(deleteQueue);
+    }
+
+    @Bean
+    public Binding createBinding() {
+        return BindingBuilder.bind(createAdvertisementQueue())
+                .to(createAdvertisementExchange())
+                .with(createRoutingKey);
+    }
+
+    @Bean
+    public Binding updateBinding() {
+        return BindingBuilder.bind(updateAdvertisementQueue())
+                .to(updateAdvertisementExchange())
+                .with(updateRoutingKey);
+    }
+
+    @Bean
+    public Binding deleteBinding() {
+        return BindingBuilder.bind(deleteAdvertisementQueue())
+                .to(deleteAdvertisementExchange())
+                .with(deleteRoutingKey);
     }
 }

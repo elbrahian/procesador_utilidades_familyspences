@@ -4,14 +4,25 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+
 
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "mensaje.certificacion-usuarios.borrado")
+@ConfigurationProperties(prefix = "client")
+@PropertySource("classpath:client.properties")
 public class PropertiesClientQueue {
 
-    private String exchangeName;
-    private String routingKey;
-    private String queueName;
+    private QueueDetails create;
+    private QueueDetails delete;
+    private QueueDetails update;
+
+    @Getter
+    @Setter
+    public static class QueueDetails {
+        private String exchangeName;
+        private String routingKey;
+        private String queueName;
+    }
 }
