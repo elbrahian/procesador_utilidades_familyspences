@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream:src/main/java/domain/Notification.java
 package domain;
+=======
+package com.familyspences.procesador_utilidades_api.domain.notifications;
+>>>>>>> Stashed changes:src/main/java/com/familyspences/procesador_utilidades_api/domain/notifications/Notification.java
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
