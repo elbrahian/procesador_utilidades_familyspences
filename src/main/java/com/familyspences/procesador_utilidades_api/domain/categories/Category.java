@@ -12,11 +12,15 @@ import java.util.UUID;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    // CORRECCIÓN 1: Quitamos @GeneratedValue.
+    // Debemos usar el ID que nos manda la API en el mensaje, no crear uno nuevo.
+    @Column(name = "id", unique = true, nullable = false)
     private UUID id;
 
-    @Column(name = "family_id")
-    private UUID familyId; // NULL = categoría global
+    // CORRECCIÓN 2: nullable = false
+    // Ya no existen globales, siempre debe tener familia.
+    @Column(name = "family_id", nullable = false)
+    private UUID familyId;
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;
@@ -36,6 +40,17 @@ public class Category {
     private BudgetPeriod budgetPeriod;
 
     public Category() {
+    }
+
+    // Constructor útil para convertir desde DTO
+    public Category(UUID id, UUID familyId, String name, CategoryType categoryType, String description, BigDecimal allocatedBudget, BudgetPeriod budgetPeriod) {
+        this.id = id;
+        this.familyId = familyId;
+        this.name = name;
+        this.categoryType = categoryType;
+        this.description = description;
+        this.allocatedBudget = allocatedBudget;
+        this.budgetPeriod = budgetPeriod;
     }
 
     public UUID getId() {
@@ -100,10 +115,6 @@ public class Category {
                 "id=" + id +
                 ", familyId=" + familyId +
                 ", name='" + name + '\'' +
-                ", categoryType=" + categoryType +
-                ", description='" + description + '\'' +
-                ", allocatedBudget=" + allocatedBudget +
-                ", budgetPeriod=" + budgetPeriod +
                 '}';
     }
 }
