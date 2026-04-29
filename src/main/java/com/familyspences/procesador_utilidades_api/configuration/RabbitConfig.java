@@ -13,6 +13,9 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 
 
+import org.springframework.beans.factory.annotation.Qualifier;
+
+
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
 
@@ -73,7 +76,7 @@ public class RabbitConfig {
     @Bean
 
 
-    public Binding binding(Queue productCreateQueue, DirectExchange productExchange) {
+    public Binding binding(Queue productCreateQueue, @Qualifier("productExchange") DirectExchange productExchange) {
 
 
         return BindingBuilder.bind(productCreateQueue).to(productExchange).with("product.create");
