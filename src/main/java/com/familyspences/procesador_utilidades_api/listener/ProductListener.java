@@ -3,6 +3,7 @@ package com.familyspences.procesador_utilidades_api.listener;
 import com.familyspences.procesador_utilidades_api.config.messages.products.ProductQueueConfig;
 import com.familyspences.procesador_utilidades_api.domain.ProductDomain;
 import com.familyspences.procesador_utilidades_api.service.ProductService;
+import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ public class ProductListener {
         this.productService = productService;
     }
 
-    @RabbitListener(queues = ProductQueueConfig.PRODUCT_CREATE_QUEUE)
+    @RabbitListener(queuesToDeclare = @Queue("product.create.queue"))
     public void handleCreateProduct(Map<String, Object> producto) {
         Map<String, Object> respuesta = new HashMap<>();
 
