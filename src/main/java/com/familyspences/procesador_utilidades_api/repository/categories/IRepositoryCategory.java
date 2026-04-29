@@ -17,4 +17,8 @@ public interface IRepositoryCategory extends JpaRepository<Category, UUID> {
 
     List<Category> findByFamilyId(UUID familyId);
 
+    List<Category> findByFamilyIdOrderByCategoryType(UUID familyId);
+
+    boolean existsByFamilyIdAndNameIgnoreCase(UUID familyId, String name);
+    boolean existsByFamilyIdAndNameIgnoreCaseAndIdNot(UUID familyId, String name, UUID id);
 }

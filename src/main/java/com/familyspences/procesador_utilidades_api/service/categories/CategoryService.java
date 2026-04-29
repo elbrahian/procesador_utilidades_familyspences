@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +30,12 @@ public class CategoryService {
         log.info("💾 Guardando category desde producer...");
 
         try {
+            if (repository.existsByFamilyIdAndNameIgnoreCase(categoryDTO.getFamilyId(), categoryDTO.getName())) {
+                log.warn("⚠️ Ya existe una categoría con el nombre '{}' para la familia {}",
+                        categoryDTO.getName(), categoryDTO.getFamilyId());
+                return;
+            }
+
             Category category = new Category();
 
             category.setId(categoryDTO.getId());
@@ -74,6 +81,13 @@ public class CategoryService {
 
             Category existing = existingOpt.get();
 
+            if (updatedCategory.getName() != null
+                    && !updatedCategory.getName().equalsIgnoreCase(existing.getName())
+                    && repository.existsByFamilyIdAndNameIgnoreCaseAndIdNot(familyId, updatedCategory.getName(), categoryId)) {
+                log.warn("⚠️ Ya existe una categoría con el nombre '{}' para la familia {}", updatedCategory.getName(), familyId);
+                return;
+            }
+
             existing.setName(updatedCategory.getName());
             existing.setDescription(updatedCategory.getDescription());
             existing.setAllocatedBudget(updatedCategory.getAllocatedBudget());
@@ -91,6 +105,10 @@ public class CategoryService {
         } catch (Exception e) {
             log.error("❌ Error processing Category UPDATE event: {}", e.getMessage(), e);
         }
+    }
+
+    public List<Category> getHierarchyByFamilyId(UUID familyId) {
+        return repository.findByFamilyIdOrderByCategoryType(familyId);
     }
 
     @Transactional

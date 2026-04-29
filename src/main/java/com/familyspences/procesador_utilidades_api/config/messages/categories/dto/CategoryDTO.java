@@ -7,6 +7,7 @@ public class CategoryDTO {
 
     private UUID id;
     private UUID familyId;
+    private UUID userId;
     private String name;
     private String categoryType;
     private String description;
@@ -32,6 +33,14 @@ public class CategoryDTO {
 
     public void setFamilyId(UUID familyId) {
         this.familyId = familyId;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public String getName() {
