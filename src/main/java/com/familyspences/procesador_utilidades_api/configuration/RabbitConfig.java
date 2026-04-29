@@ -82,7 +82,15 @@ public class RabbitConfig {
     }
 
 
+    @Bean
+    public Queue productEditQueue() {
+        return new Queue("product.edit.queue");
+    }
 
+    @Bean
+    public Binding editBinding(Queue productEditQueue, DirectExchange productExchange) {
+        return BindingBuilder.bind(productEditQueue).to(productExchange).with("product.edit");
+    }
 
 
     @Bean
@@ -130,6 +138,15 @@ public class RabbitConfig {
     }
 
 
+    @Bean
+    public Queue productDeleteQueue() {
+        return new Queue("product.delete.queue");
+    }
+
+    @Bean
+    public Binding deleteBinding(Queue productDeleteQueue, DirectExchange productExchange) {
+        return BindingBuilder.bind(productDeleteQueue).to(productExchange).with("product.delete");
+    }
 
 
 

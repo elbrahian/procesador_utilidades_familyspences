@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.springframework.data.crossstore.ChangeSetPersister.ID_KEY;
 
@@ -47,4 +48,35 @@ public class ProductListener {
             System.err.println("❌ Error al guardar producto: " + e.getMessage());
         }
     }
+
+    @RabbitListener(queues = "product.edit.queue")
+    public void handleEditProduct(Map<String, Object> productData) {
+        Map<String, Object> respuesta = new HashMap<>();
+
+        try {
+            ProductDomain updatedProduct = productService.updateProduct(productData);
+
+            respuesta.put(MENSAJE, "Producto editado exitosamente");
+            respuesta.put(ID_KEY, updatedProduct.getId().toString());
+            respuesta.put(PRODUCTO_KEY, updatedProduct);
+            System.out.println("✅ Producto editado en base de datos: " + updatedProduct.getProduct());
+        } catch (Exception e) {
+            System.err.println("❌ Error al editar producto: " + e.getMessage());
+            // Opcional: envía respuesta de error si tienes un mecanismo para ello
+        }
+    }
+
+    @RabbitListener(queues = "product.delete.queue")
+    public void handleDeleteProduct(UUID productId) {
+        try {
+            if (productId == null || productId.toString().isEmpty()) {
+                throw new IllegalArgumentException("El ID del producto es requerido para eliminación");
+            }
+            productService.deleteProduct(productId);
+            System.out.println("✅ Producto eliminado: " + productId);
+        } catch (Exception e) {
+            System.err.println("❌ Error al eliminar producto: " + e.getMessage());
+        }
+    }
+
 }

@@ -76,4 +76,40 @@ public class ProductService {
             default -> throw new NumberFormatException("Tipo de precio no válido: " + priceObj.getClass().getSimpleName());
         };
     }
+
+    public ProductDomain updateProduct(Map<String, Object> productData) {
+
+        String idStr = (String) productData.get("id");
+        UUID id = UUID.fromString(idStr);
+
+        Optional<ProductDomain> existingProductOpt = productRepository.findById(id);
+        if (existingProductOpt.isEmpty()) {
+            throw new IllegalArgumentException("Producto no encontrado con ID: " + id);
+        }
+        ProductDomain existingProduct = existingProductOpt.get();
+
+        // Actualiza solo los campos proporcionados
+        String productName = (String) productData.get("producto");
+        if (productName != null && !productName.trim().isEmpty()) {
+            existingProduct.setProduct(productName.trim());
+        }
+
+        String store = (String) productData.get("negocio");
+        if (store != null && !store.trim().isEmpty()) {
+            existingProduct.setStore(store.trim());
+        }
+
+        Object priceObj = productData.get("precio");
+        if (priceObj != null) {
+            int price = convertAndValidatePrice(priceObj);
+            existingProduct.setPrice(price);
+        }
+
+        return productRepository.save(existingProduct);
+    }
+
+    public void deleteProduct(UUID id) {
+        productRepository.deleteById(id);
+    }
+
 }
