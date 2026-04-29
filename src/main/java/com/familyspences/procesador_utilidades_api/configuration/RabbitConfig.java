@@ -76,10 +76,10 @@ public class RabbitConfig {
     @Bean
 
 
-    public Binding binding(Queue productCreateQueue, @Qualifier("productExchange") DirectExchange productExchange) {
+    public Binding binding() {
 
 
-        return BindingBuilder.bind(productCreateQueue).to(productExchange).with("product.create");
+        return BindingBuilder.bind(productCreateQueue()).to(productExchange()).with("product.create");
 
 
     }
