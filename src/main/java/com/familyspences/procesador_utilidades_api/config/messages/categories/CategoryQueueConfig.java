@@ -1,15 +1,11 @@
 package com.familyspences.procesador_utilidades_api.config.messages.categories;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CategoryQueueConfig {
-
-    private static final Logger log = LoggerFactory.getLogger(CategoryQueueConfig.class);
 
     public static final String EXCHANGE_NAME = "x.category.exchange";
 
@@ -21,53 +17,48 @@ public class CategoryQueueConfig {
     public static final String ROUTING_KEY_UPDATE = "category.update";
     public static final String ROUTING_KEY_DELETE = "category.delete";
 
-    public CategoryQueueConfig() {
-        log.info("========================================");
-        log.info("CategoryQueueConfig INITIALIZED!");
-        log.info("========================================");
-    }
-
     @Bean
-    public TopicExchange categoryExchange() {
-        return new TopicExchange(EXCHANGE_NAME);
+    public DirectExchange categoryExchange() {
+        return new DirectExchange(EXCHANGE_NAME);
     }
 
     @Bean
     public Queue categoryCreateQueue() {
-        return QueueBuilder.durable(QUEUE_CATEGORY_CREATE).build();
+        return new Queue(QUEUE_CATEGORY_CREATE, true); // true = durable
     }
 
     @Bean
     public Queue categoryUpdateQueue() {
-        return QueueBuilder.durable(QUEUE_CATEGORY_UPDATE).build();
+        return new Queue(QUEUE_CATEGORY_UPDATE, true);
     }
 
     @Bean
     public Queue categoryDeleteQueue() {
-        return QueueBuilder.durable(QUEUE_CATEGORY_DELETE).build();
+        return new Queue(QUEUE_CATEGORY_DELETE, true);
     }
 
+
     @Bean
-    public Binding categoryCreateBinding() {
+    public Binding bindCategoryCreate(Queue categoryCreateQueue, DirectExchange categoryExchange) {
         return BindingBuilder
-                .bind(categoryCreateQueue())
-                .to(categoryExchange())
+                .bind(categoryCreateQueue)
+                .to(categoryExchange)
                 .with(ROUTING_KEY_CREATE);
     }
 
     @Bean
-    public Binding categoryUpdateBinding() {
+    public Binding bindCategoryUpdate(Queue categoryUpdateQueue, DirectExchange categoryExchange) {
         return BindingBuilder
-                .bind(categoryUpdateQueue())
-                .to(categoryExchange())
+                .bind(categoryUpdateQueue)
+                .to(categoryExchange)
                 .with(ROUTING_KEY_UPDATE);
     }
 
     @Bean
-    public Binding categoryDeleteBinding() {
+    public Binding bindCategoryDelete(Queue categoryDeleteQueue, DirectExchange categoryExchange) {
         return BindingBuilder
-                .bind(categoryDeleteQueue())
-                .to(categoryExchange())
+                .bind(categoryDeleteQueue)
+                .to(categoryExchange)
                 .with(ROUTING_KEY_DELETE);
     }
 }
